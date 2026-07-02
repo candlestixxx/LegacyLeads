@@ -4,6 +4,20 @@ All notable changes to this project are documented here.
 
 ---
 
+## [1.1.0] — 2026-07-02 — Frontend Scaffolded
+
+### Added
+- **Next.js 16 Frontend:** Scaffolded with TypeScript, Tailwind CSS v4, App Router, and `src/` directory.
+- **pnpm Migration:** Adopted pnpm as package manager (npm was unreliable in this environment); build scripts updated.
+- **Production Build Verified:** Next.js compiles successfully (static generation, 2 routes).
+
+### Changed
+- `build.bat` — Added pnpm detection and fallback to npm.
+- `start.bat` — Added pnpm detection for dev server.
+- `setup.bat` — Will use pnpm install when available.
+
+---
+
 ## [1.0.0] — 2026-07-02 — Initial Foundation
 
 ### Added

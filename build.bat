@@ -11,8 +11,14 @@ REM Build frontend
 if exist frontend\ (
     echo [STEP 1/3] Building frontend...
     cd frontend
-    call npm install
-    call npm run build
+    where pnpm >nul 2>nul
+    if %ERRORLEVEL% EQU 0 (
+        call pnpm install
+        call pnpm run build
+    ) else (
+        call npm install
+        call npm run build
+    )
     if %ERRORLEVEL% NEQ 0 (
         echo [ERROR] Frontend build failed!
         exit /b 1

@@ -32,7 +32,12 @@ REM Start frontend
 if exist frontend\ (
     echo [INFO] Starting frontend...
     cd frontend
-    start "" cmd /c "npm run dev"
+    where pnpm >nul 2>nul
+    if %ERRORLEVEL% EQU 0 (
+        start "" cmd /c "pnpm run dev"
+    ) else (
+        start "" cmd /c "npm run dev"
+    )
     cd ..
 )
 
