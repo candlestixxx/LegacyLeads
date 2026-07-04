@@ -1,8 +1,8 @@
 # OmniLead Nexus — Immediate Task Backlog
 
 ## P0 — Critical (Pre-Build)
-- [ ] Initialize Next.js/React project with TypeScript and Tailwind CSS
-- [ ] Initialize backend project (Node.js/FastAPI)
+- [x] Initialize Next.js/React project with TypeScript and Tailwind CSS
+- [x] Initialize backend project (Node.js/TypeScript)
 - [ ] Set up PostgreSQL database with PostGIS extension
 - [ ] Set up Redis instance configuration
 - [ ] Create Docker Compose file for local development

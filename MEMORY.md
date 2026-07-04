@@ -12,13 +12,26 @@ C:/Users/jakeg/workspace/LegacyLeads/
 ├── MEMORY.md           # This file — architectural observations
 ├── DEPLOY.md           # Deployment & environment setup
 ├── IDEAS.md            # Creative expansion ideas
-└── HANDOFF.md          # Session handoff documentation
+├── HANDOFF.md          # Session handoff documentation
+├── backend/            # Node.js/TypeScript API service
+│   ├── src/index.ts    # Entry point
+│   ├── dist/           # Compiled output
+│   ├── package.json    # omnilead-nexus-backend
+│   └── tsconfig.json
+├── frontend/           # Next.js 16 web application
+│   ├── src/app/        # App Router pages
+│   ├── AGENTS.md       # AI agent rules for Next.js 16
+│   ├── CLAUDE.md       # Agent reference
+│   └── package.json
+├── *.bat               # Execution scripts (build, start, setup)
+└── .gitignore
 ```
 
-## Key Architectural Decisions (Pre-Build)
+## Key Architectural Decisions
 1. **Single repository monorepo** approach — all modules within one repo for simplicity during initial build phase. Future extraction into submodules may be warranted for the AI agent SDK and CRM integration packages.
 2. **No submodules currently** — the README specifies submodule management in its protocol, but no submodules exist yet. Will add as the system grows.
 3. **Version scheme** uses VERSION.md as single source of truth rather than hardcoding in application code.
+4. **pnpm is the package manager** — npm is unreliable in this environment (extreme slowness, tarball corruption). Use `pnpm install` consistently.
 
 ## Design Preferences
 - Clean, modern UI with minimal friction for credit purchasing

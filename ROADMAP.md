@@ -4,8 +4,8 @@
 **Status:** ✅ Specification complete | 🔄 Documentation scaffolded
 
 ### Milestone 1.1: Core Architecture Setup
-- [ ] Initialize Next.js/React frontend with Tailwind CSS
-- [ ] Initialize Node.js (TypeScript) or Python (FastAPI) RESTful backend
+- [x] Initialize Next.js/React frontend with Tailwind CSS (v16.2.10)
+- [x] Initialize Node.js (TypeScript) RESTful backend (scaffolded, compiles cleanly)
 - [ ] Set up PostgreSQL with PostGIS for geospatial queries
 - [ ] Set up Redis for high-speed lead synchronization queues
 - [ ] Establish Docker containerization for development parity

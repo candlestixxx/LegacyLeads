@@ -33,7 +33,21 @@ REM Build backend
 if exist backend\ (
     echo [STEP 2/3] Building backend...
     cd backend
-    if exist requirements.txt (
+    if exist package.json (
+        where pnpm >nul 2>nul
+        if %ERRORLEVEL% EQU 0 (
+            call pnpm install
+            if exist tsconfig.json (
+                call pnpm run build 2>nul || echo [INFO] No build script defined, using tsc directly...
+                if exist node_modules\.bin\tsc (
+                    call npx tsc 2>nul
+                )
+            )
+        ) else (
+            call npm install
+            call npm run build 2>nul || echo [INFO] No build script, skipping.
+        )
+    ) else if exist requirements.txt (
         call pip install -r requirements.txt
     )
     cd ..
