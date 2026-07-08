@@ -1,55 +1,102 @@
-# DEPLOY
+# OmniLead Nexus — Deployment Guide
 
-## Environment Setup & Deployment Instructions
+## Environment Prerequisites
 
-### Prerequisites
-- Node.js 18+
-- PostgreSQL 15+ (with PostGIS extension enabled)
-- Redis 6+
+### Local Development
+| Component | Version | Notes |
+|-----------|---------|-------|
+| Node.js | >= 18.x LTS | Required for frontend (Next.js) |
+| Python | >= 3.11 | Optional backend (FastAPI alternative) |
+| PostgreSQL | >= 15.x | With PostGIS extension |
+| Redis | >= 7.x | For queue management |
+| Docker | >= 24.x | Recommended for environment parity |
+| Docker Compose | >= 2.x | For multi-service orchestration |
 
-### Environment Variables (.env)
-Required across Frontend and Backend services:
+### Environment Variables
+Create `.env.local` for frontend and `.env` for backend:
 
 ```env
 # Database
-DATABASE_URL=postgres://user:pass@localhost:5432/omnilead
+DATABASE_URL=postgresql://user:password@localhost:5432/omnileadnexus
+POSTGIS_ENABLED=true
+
+# Redis
 REDIS_URL=redis://localhost:6379
 
-# Map & API Keys
-MAPBOX_ACCESS_TOKEN=your_mapbox_token
-# Add LLM Keys
-OPENAI_API_KEY=your_key
-ANTHROPIC_API_KEY=your_key
-GEMINI_API_KEY=your_key
+# Authentication
+JWT_SECRET=<generate-random-secret>
+JWT_EXPIRY=24h
 
-# Third-Party Integrations
-STRIPE_SECRET_KEY=your_stripe_key
+# External APIs
+MAPBOX_ACCESS_TOKEN=<your-mapbox-token>
+GOOGLE_MAPS_API_KEY=<your-google-maps-key>
+
+# MLS Credential Gateway
+MLS_API_BASE_URL=<mls-reso-api-endpoint>
+
+# Payment Gateway
+STRIPE_SECRET_KEY=<stripe-secret>
+STRIPE_PUBLISHABLE_KEY=<stripe-publishable>
+
+# AI Provider Keys (optional per integration)
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+GEMINI_API_KEY=
 ```
 
-### Local Development Startup
+## Local Setup
 
-**1. Database Setup**
+### Using Docker (Recommended)
 ```bash
-# Ensure Postgres is running and the 'omnilead' db exists with PostGIS.
-# Create PostGIS extension inside your DB:
-# CREATE EXTENSION postgis;
+docker compose up -d
 ```
 
-**2. Backend Service**
+### Manual Setup
 ```bash
+# Backend
 cd backend
-npm install
-npm run start:dev # or npx ts-node src/index.ts
-```
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn main:app --reload
 
-**3. Frontend Service**
-```bash
+# Frontend
 cd frontend
 npm install
-npm run start:dev
+npm run dev
 ```
 
-### Production Deployment Notes
-- **Scaling:** Backend services parsing MLS webhooks must be deployed behind a load balancer to handle ingestion spikes. Redis/BullMQ instances require dedicated memory scaling.
-- **Geospatial Processing:** Ensure PostGIS spatial indices are built during production migration steps to keep bounding-box queries optimal.
-- **Edge Caching:** Map tile components should rely heavily on edge CDN caching.
+## Production Build
+```bash
+# Frontend build
+cd frontend
+npm run build
+
+# Docker production build
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d
+```
+
+## Deployment Targets
+- **Vercel** (recommended for Next.js frontend)
+- **Railway / Render** (backend API)
+- **AWS EC2 / ECS** (enterprise self-hosted)
+- **Google Cloud Run** (containerized deployment)
+
+## Database Migrations
+```bash
+# Generate migration
+alembic revision --autogenerate -m "description"
+
+# Apply migration
+alembic upgrade head
+
+# Rollback
+alembic downgrade -1
+```
+
+## Monitoring
+- **Health Check:** `GET /api/health`
+- **Metrics:** Prometheus endpoint at `/api/metrics`
+- **Logging:** Structured JSON logging to stdout (Docker)

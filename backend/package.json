@@ -1,13 +1,15 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "omnilead-nexus-backend",
+  "version": "1.1.0",
+  "description": "OmniLead Nexus — Backend API Service",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\""
   },
-  "keywords": [],
+  "keywords": ["lead-generation", "real-estate", "mls", "crm"],
   "author": "",
   "license": "ISC",
   "type": "module",
