@@ -9,3 +9,7 @@
 - Established PostgreSQL connection pooling in `backend/src/db.ts` utilizing `pg` module.
 - Set up high-speed Redis caching architecture in `backend/src/redis.ts`.
 - Built the `UnifiedPropertyRecord` TypeScript interface representing the unified RESO API abstraction schema.
+- Added `backend/migrations/01_initial_schema.sql` mapping PostgreSQL structure with PostGIS and atomic `credit_ledgers`.
+- Implemented robust transactional `deductCredits` function in `backend/src/credits.ts`.
+- Configured foundational Express API with `GET /listings` and `POST /augmentpropertyrecord` routes.
+- Wrote and verified integration tests via Jest + Supertest (`app.test.ts`).
