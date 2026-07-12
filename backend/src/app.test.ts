@@ -7,7 +7,17 @@ jest.unstable_mockModule("./credits.js", () => {
     };
 });
 
+jest.unstable_mockModule("./queue.js", () => {
+    return {
+        aiSyncQueue: {
+            add: jest.fn().mockResolvedValue({ id: 'mock-job-id' } as never)
+        },
+        aiSyncWorker: {}
+    };
+});
+
 const { deductCredits } = await import("./credits.js");
+const { aiSyncQueue } = await import("./queue.js");
 const { default: app } = await import("./app.js");
 import request from 'supertest';
 import pool from './db.js';
@@ -52,5 +62,20 @@ describe('OmniLead Nexus API', () => {
         expect(res.body.success).toEqual(true);
         expect(res.body.data.OwnerName).toEqual('John Doe');
         expect(deductCredits).toHaveBeenCalledWith("user-123", "premium_credits", 1, "Augment record: MOCK-123");
+    });
+
+    it('POST /webhooks/ai-sync should return 202 Accepted immediately', async () => {
+        const res = await request(app).post('/webhooks/ai-sync').send({
+            userId: "user-123",
+            targetListSize: 500
+        });
+
+        expect(res.statusCode).toEqual(202);
+        expect(res.body.jobId).toEqual('mock-job-id');
+        expect(aiSyncQueue.add).toHaveBeenCalledWith('ai-batch-sync', {
+            userId: "user-123",
+            targetListSize: 500,
+            geofenceId: undefined
+        });
     });
 });

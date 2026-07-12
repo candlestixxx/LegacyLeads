@@ -2,6 +2,7 @@ import app from './app.js';
 import * as dotenv from 'dotenv';
 import './db.js'; // Ensure DB pool initializes
 import './redis.js'; // Ensure Redis client initializes
+import './queue.js'; // Ensure BullMQ Workers initialize
 
 dotenv.config();
 

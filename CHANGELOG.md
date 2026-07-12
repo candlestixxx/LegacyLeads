@@ -13,3 +13,8 @@
 - Implemented robust transactional `deductCredits` function in `backend/src/credits.ts`.
 - Configured foundational Express API with `GET /listings` and `POST /augmentpropertyrecord` routes.
 - Wrote and verified integration tests via Jest + Supertest (`app.test.ts`).
+
+## [0.3.0] - AI Agentic Event Queues
+- Implemented BullMQ queue architecture (`backend/src/queue.ts`) designed to handle background processing for heavy geospatial queries and skip-tracing.
+- Exceeded AI dialer integration requirements by creating an async `POST /webhooks/ai-sync` route which responds instantly with 202 Accepted.
+- Covered the new async architecture with full Jest integration tests.

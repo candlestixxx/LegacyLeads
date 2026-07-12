@@ -1,6 +1,7 @@
 import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import { deductCredits } from './credits.js';
+import { aiSyncQueue } from './queue.js';
 
 const app = express();
 
@@ -62,6 +63,37 @@ app.post('/augmentpropertyrecord', async (req: Request, res: Response) => {
         res.json({ success: true, data: mockAugmentedData });
     } catch (e: any) {
         res.status(402).json({ error: 'Payment Required or Deduction Failed', details: e.message });
+    }
+});
+
+/**
+ * POST /webhooks/ai-sync
+ * Asynchronously queues a large data sync for an AI Dialer integration.
+ * Immediately returns 202 Accepted to prevent CRM/Agent timeouts.
+ */
+app.post('/webhooks/ai-sync', async (req: Request, res: Response) => {
+    try {
+        const { userId, targetListSize, geofenceId } = req.body;
+
+        if (!userId || !targetListSize) {
+            return res.status(400).json({ error: 'Missing userId or targetListSize' });
+        }
+
+        // Push to BullMQ for asynchronous background processing
+        const job = await aiSyncQueue.add('ai-batch-sync', {
+            userId,
+            targetListSize,
+            geofenceId
+        });
+
+        // Immediately release the connection
+        res.status(202).json({
+            message: 'Sync queued successfully',
+            jobId: job.id
+        });
+
+    } catch (e: any) {
+        res.status(500).json({ error: 'Failed to queue sync job', details: e.message });
     }
 });
 
