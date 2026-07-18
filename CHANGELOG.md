@@ -18,3 +18,8 @@
 - Implemented BullMQ queue architecture (`backend/src/queue.ts`) designed to handle background processing for heavy geospatial queries and skip-tracing.
 - Exceeded AI dialer integration requirements by creating an async `POST /webhooks/ai-sync` route which responds instantly with 202 Accepted.
 - Covered the new async architecture with full Jest integration tests.
+
+## [0.4.0] - Frontend Maps & Dashboard Skeleton
+- Drafted main frontend dashboard UI featuring `Sidebar` and `OmniSearch`.
+- Drafted `InteractiveMap` core component leveraging `react-map-gl` and Mapbox GL.
+- Configured frontend Next.js routing and UI integration for the Live Market Feed.
