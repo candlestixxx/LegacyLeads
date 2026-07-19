@@ -23,3 +23,8 @@
 - Drafted main frontend dashboard UI featuring `Sidebar` and `OmniSearch`.
 - Drafted `InteractiveMap` core component leveraging `react-map-gl` and Mapbox GL.
 - Configured frontend Next.js routing and UI integration for the Live Market Feed.
+
+## [0.5.0] - AI Agentic Business Logic & Guardrails
+- Implemented TCPA compliance guardrails (`backend/src/compliance.ts`) utilizing Luxon to dynamically enforce localized timezone safe-calling windows.
+- Developed the "Smart Skip-Tracing Cascade Engine" (`backend/src/skiptrace.ts`) to intelligently failover across multiple backend data providers (Provider A -> B -> C) while appropriately scaling fractional credit deductions.
+- Fully wired AI-Sync queue worker to respect compliance hours and utilize cascade logic before finalizing queue extraction.

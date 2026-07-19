@@ -14,5 +14,5 @@
 - [x] Stub the `POST /augmentpropertyrecord` REST endpoint.
 - [x] Stub the `GET /listings` REST endpoint with bounding box parameters.
 - [ ] Connect initial Mapbox GL canvas to Next.js for geofence drawing.
-- [ ] Write integration test for failover skip-tracing cascade logic.
-- [ ] Implement local-timezone calculation logic for "Quiet Hours" guardrail.
+- [x] Write integration test for failover skip-tracing cascade logic.
+- [x] Implement local-timezone calculation logic for "Quiet Hours" guardrail.
