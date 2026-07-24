@@ -1,31 +1,23 @@
-# Handoff Summary — LegacyLeads
+# HANDOFF
 
-## Session: 2026-07-20 (v0.1.0)
+## Project: OmniLead Nexus (LegacyLeads)
+**Session Conclusion Summary**
 
-### Project State
-- **Backend**: TypeScript/Express with Jest testing, Prisma ORM (db.ts), Redis (redis.ts), compliance module, skip trace module, queue system
-- **Frontend**: Next.js app with InteractiveMap, OmniSearch, Sidebar components
-- **Build**: `backend/package.json` (npm) + `frontend/package.json` (npm)
-- **Tests**: 2 test files (app.test.ts, compliance.test.ts, skiptrace.test.ts)
-- **CI/CD**: None configured
+The initial architecture and core foundation of the OmniLead Nexus system have been fully established. This document serves as a frictionless resumption point for any successor model (Gemini, Claude, GPT).
 
-### Architecture Notes
-- Backend uses Express.js with TypeScript, compiled to `dist/`
-- Redis integration for caching and session management
-- Skip trace module with test coverage
-- Compliance module with test coverage
-- Frontend uses Next.js with pre-built `.next` artifacts
+### Completed Features & Structural Shifts
+1. **Core Governance Framework:** Created and populated `VISION.md`, `ROADMAP.md`, `TODO.md`, `DEPLOY.md`, `CHANGELOG.md`, `IDEAS.md`, and `MEMORY.md`.
+2. **Next.js Frontend Scaffolding:** Developed the primary dashboard shell (Sidebar, OmniSearch, Live Market Feed) utilizing Tailwind CSS and `lucide-react`. The `react-map-gl` interactive canvas has been placed and configured (Offline fallback states are handled gracefully if `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` is missing).
+   * *Important shift:* When importing `react-map-gl`, you must use `import ... from 'react-map-gl/mapbox'` to avoid ESM module resolution crashes during the Next.js Turbopack build process.
+3. **Node.js (TypeScript) Backend REST API:** Established the `/listings` and `/augmentpropertyrecord` routes. Set `package.json` to `"type": "module"` and strictly enforced `.js` file extensions in imports.
+4. **PostgreSQL / PostGIS Configuration:** Configured atomic `credit_ledgers` tables in `backend/migrations/01_initial_schema.sql` and wrote the `deductCredits` row-locking transaction logic in `backend/src/credits.ts`.
+5. **High-Throughput Webhook Queue (BullMQ):** Deployed a Redis-backed async queue to handle intensive scraping/AI-calling data synchronization.
+6. **Smart Skip-Trace & TCPA Guardrails:** Injected `luxon` to dynamically determine TCPA "Quiet Hour" compliance bounds (8 AM - 8 PM) based on target zip codes. Built a failover Skip-Tracing cascade engine (Provider A -> B -> C) to optimize credit fractionalization dynamically.
+7. **ESM Testing Suite:** Configured Jest + Supertest to run seamlessly in the ESM Node environment (`--experimental-vm-modules`).
+   * *Important shift:* You must utilize `jest.unstable_mockModule` for spying and mocking imports *before* running standard `await import()` on the subject modules.
 
-### Gaps Identified
-- [ ] No CI/CD pipeline (.github/workflows/)
-- [ ] Missing HANDOFF.md (this file) and VERSION.md (created)
-- [ ] No root-level package.json (monorepo with backend/ and frontend/)
-- [ ] Frontend has pre-built artifacts in .next/ — should be gitignored or rebuilt
-
-### Next Steps
-1. Add GitHub Actions CI/CD for backend and frontend
-2. Add root-level package.json with workspace scripts
-3. Expand test coverage beyond 3 test files
-4. Wire all backend features to frontend UI
-
-**Last verified:** 2026-07-20
+### Next Immediate Action Items (For Successor)
+Review the `TODO.md` for specific granular tasks. The next primary focus should be:
+1. Connecting the Mapbox GL canvas to actually render PostGIS polygon queries dynamically.
+2. Replacing the mocked backend Database queries in `app.ts` with explicit node-postgres (`pg`) statements.
+3. Establishing the Docker / Kubernetes compose structure for staging deployments.

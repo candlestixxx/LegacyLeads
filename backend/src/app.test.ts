@@ -67,7 +67,8 @@ describe('OmniLead Nexus API', () => {
     it('POST /webhooks/ai-sync should return 202 Accepted immediately', async () => {
         const res = await request(app).post('/webhooks/ai-sync').send({
             userId: "user-123",
-            targetListSize: 500
+            targetListSize: 500,
+            zipCode: "48001"
         });
 
         expect(res.statusCode).toEqual(202);
@@ -75,7 +76,8 @@ describe('OmniLead Nexus API', () => {
         expect(aiSyncQueue.add).toHaveBeenCalledWith('ai-batch-sync', {
             userId: "user-123",
             targetListSize: 500,
-            geofenceId: undefined
+            geofenceId: undefined,
+            zipCode: "48001"
         });
     });
 });

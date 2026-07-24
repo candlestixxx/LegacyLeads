@@ -73,7 +73,7 @@ app.post('/augmentpropertyrecord', async (req: Request, res: Response) => {
  */
 app.post('/webhooks/ai-sync', async (req: Request, res: Response) => {
     try {
-        const { userId, targetListSize, geofenceId } = req.body;
+        const { userId, targetListSize, geofenceId, zipCode } = req.body;
 
         if (!userId || !targetListSize) {
             return res.status(400).json({ error: 'Missing userId or targetListSize' });
@@ -83,7 +83,8 @@ app.post('/webhooks/ai-sync', async (req: Request, res: Response) => {
         const job = await aiSyncQueue.add('ai-batch-sync', {
             userId,
             targetListSize,
-            geofenceId
+            geofenceId,
+            zipCode
         });
 
         // Immediately release the connection

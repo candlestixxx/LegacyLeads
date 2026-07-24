@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS properties (
 -- 2. User Credit Ledgers (Atomic Transaction Structure)
 CREATE TABLE IF NOT EXISTS credit_ledgers (
     user_id UUID PRIMARY KEY,
-    basic_credits INT DEFAULT 0,
-    premium_credits INT DEFAULT 0,
+    basic_credits DECIMAL(10, 2) DEFAULT 0,
+    premium_credits DECIMAL(10, 2) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS credit_transactions (
     transaction_id SERIAL PRIMARY KEY,
     user_id UUID REFERENCES credit_ledgers(user_id),
     credit_type VARCHAR(50), -- 'basic' or 'premium'
-    amount INT NOT NULL,     -- negative for deduction, positive for top-up
+    amount DECIMAL(10, 2) NOT NULL,     -- negative for deduction, positive for top-up
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
