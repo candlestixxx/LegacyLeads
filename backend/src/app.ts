@@ -8,6 +8,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// JSON error handler: return JSON instead of HTML stack traces for body-parser errors
+app.use((err: any, _req: any, res: any, next: any) => {
+  if (err?.type === 'entity.parse.failed' || err instanceof SyntaxError) {
+    return res.status(400).json({ error: 'Invalid JSON body' });
+  }
+  next(err);
+});
+
 // Basic health check endpoint
 app.get('/health', (req: Request, res: Response) => {
     res.json({ status: 'OK', service: 'OmniLead Nexus API' });
