@@ -17,6 +17,7 @@ import {
   Settings,
   HelpCircle,
   Map,
+  ArrowUpRight,
 } from 'lucide-react';
 
 interface NavItem {
@@ -72,6 +73,15 @@ export default function Sidebar() {
         </Link>
 
         <nav className="space-y-4">
+          <a
+            href="https://excellegacyrealtygroup.site"
+            title="Back to Excel Legacy Realty Group main dashboard"
+            className="flex items-center space-x-3 p-2 rounded text-blue-400 hover:bg-gray-800 border border-transparent font-medium"
+          >
+            <ArrowUpRight className="w-5 h-5 rotate-180" />
+            <span>Main Dashboard</span>
+          </a>
+          <div className="border-t border-gray-700" />
           <div>
             <h2 className="text-xs uppercase text-gray-400 font-semibold mb-2">Leads</h2>
             <ul className="space-y-2">
