@@ -11,6 +11,22 @@ export default function Home() {
         <OmniSearch />
 
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+          {/* Project Goal */}
+          <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center shrink-0 text-white text-sm font-bold">🔍</div>
+              <div>
+                <h2 className="text-sm font-bold text-gray-900">LegacyLeads — Property Data &amp; Skip Tracing</h2>
+                <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                  Property data, skip tracing, compliance checks, and lead enrichment for real-estate professionals.
+                  Search MLS listings, find owner contact info, run TCPA/DNC compliance, and manage lead data —
+                  all from one workspace. Part of the
+                  <a href="https://excellegacyrealtygroup.site" className="text-emerald-600 underline"> Excel Legacy Realty Group</a> platform.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
             {/* Map Area dominates the view */}
             <div className="lg:col-span-2 h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden relative">
