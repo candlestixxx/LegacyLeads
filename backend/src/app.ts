@@ -2,6 +2,8 @@ import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import { deductCredits } from './credits.js';
 import { aiSyncQueue } from './queue.js';
+import { query } from './db.js';
+import { cascadeSkipTrace } from './skiptrace.js';
 
 const app = express();
 
@@ -23,23 +25,33 @@ app.get('/health', (req: Request, res: Response) => {
 
 /**
  * GET /listings
- * Query state-level MLS scraped lists filtering by statuses, min/max price, zip codes, and base radiuses.
+ * Query MLS listing data by status, price, zip code, and radius (PostGIS).
+ * Backed by the `listings` table populated via the MLS ingestion gateway.
  */
 app.get('/listings', async (req: Request, res: Response) => {
     try {
-        const { status, minPrice, maxPrice, zipCode } = req.query;
-        // MOCK: In production this will translate into a complex PostGIS + PostgreSQL query.
-        res.json({
-            data: [
-                {
-                    ListingKey: "MOCK-123",
-                    StandardStatus: status || "Active",
-                    ListPrice: minPrice || 250000,
-                    PostalCode: zipCode || "48001"
-                }
-            ],
-            count: 1
-        });
+        const { status, minPrice, maxPrice, zipCode, radius, lat, lng, limit } = req.query;
+        const params: any[] = [];
+        const where: string[] = [];
+
+        if (status) { params.push(status); where.push(`"StandardStatus" = $${params.length}`); }
+        if (minPrice) { params.push(Number(minPrice)); where.push(`"ListPrice" >= $${params.length}`); }
+        if (maxPrice) { params.push(Number(maxPrice)); where.push(`"ListPrice" <= $${params.length}`); }
+        if (zipCode) { params.push(zipCode); where.push(`"PostalCode" = $${params.length}`); }
+        if (lat && lng && radius) {
+            params.push(Number(lat), Number(lng), Number(radius));
+            where.push(`ST_DWithin(
+                geom::geography,
+                ST_SetSRID(ST_MakePoint($${params.length - 1}, $${params.length - 2}), 4326)::geography,
+                $${params.length} * 1609.34
+            )`);
+        }
+
+        params.push(Math.min(1000, Math.max(1, Number(limit) || 100)));
+        const sql = `SELECT * FROM listings ${where.length ? 'WHERE ' + where.join(' AND ') : ''} LIMIT $${params.length}`;
+        const result = await query(sql, params);
+
+        res.json({ data: result.rows, count: result.rowCount });
     } catch (e: any) {
         res.status(500).json({ error: e.message });
     }
@@ -48,6 +60,7 @@ app.get('/listings', async (req: Request, res: Response) => {
 /**
  * POST /augmentpropertyrecord
  * Trigger on-demand advanced skip tracing using usage credits.
+ * Runs the live provider cascade (Twilio -> Whitepages -> PDL).
  */
 app.post('/augmentpropertyrecord', async (req: Request, res: Response) => {
     try {
@@ -59,16 +72,27 @@ app.post('/augmentpropertyrecord', async (req: Request, res: Response) => {
         // 1. Attempt Atomic Credit Deduction
         await deductCredits(userId, 'premium_credits', 1, `Augment record: ${listingKey}`);
 
-        // 2. MOCK: Smart Skip-Tracing Cascade Engine Action (Provider A -> B -> C)
-        const mockAugmentedData = {
-            ListingKey: listingKey,
-            OwnerName: 'John Doe',
-            OwnerPhones: ['555-0100', '555-0101'],
-            OwnerEmails: ['john.doe@example.com'],
-            IsAbsenteeOwner: true
-        };
+        // 2. Live skip-trace cascade against the listing's address
+        const listingRes = await query('SELECT * FROM listings WHERE "ListingKey" = $1 LIMIT 1', [listingKey]);
+        const listing = listingRes.rows?.[0];
+        const address = listing?.UnparsedAddress || listing?.address || '';
+        if (!address) {
+            return res.status(404).json({ error: `Listing ${listingKey} not found or has no address` });
+        }
 
-        res.json({ success: true, data: mockAugmentedData });
+        const traced = await cascadeSkipTrace(userId, address);
+
+        res.json({
+            success: true,
+            data: {
+                ListingKey: listingKey,
+                OwnerName: listing?.OwnerName || listing?.owner_name || null,
+                OwnerPhones: traced.phones,
+                OwnerEmails: traced.emails,
+                IsAbsenteeOwner: listing?.IsAbsenteeOwner ?? null,
+                providerUsed: traced.providerUsed,
+            }
+        });
     } catch (e: any) {
         res.status(402).json({ error: 'Payment Required or Deduction Failed', details: e.message });
     }
