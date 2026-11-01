@@ -45,6 +45,7 @@ const { deductCredits } = await import("./credits.js");
 const { aiSyncQueue } = await import("./queue.js");
 const { default: app } = await import("./app.js");
 import request from 'supertest';
+const { query } = await import("./db.js");
 
 describe('OmniLead Nexus API', () => {
 
@@ -65,6 +66,16 @@ describe('OmniLead Nexus API', () => {
         expect(res.statusCode).toEqual(200);
         expect(res.body.data[0].StandardStatus).toEqual('Active');
         expect(res.body.count).toEqual(1);
+    });
+
+    it('GET /listings reports an honest error when Postgres is unreachable', async () => {
+        ((query as unknown) as jest.Mock<any>).mockRejectedValueOnce(Object.assign(new Error(''), { code: 'ECONNREFUSED' }));
+
+        const res = await request(app).get('/listings');
+        expect(res.statusCode).toEqual(500);
+        expect(typeof res.body.error).toEqual('string');
+        expect(res.body.error.length).toBeGreaterThan(0);
+        expect(res.body.code).toEqual('ECONNREFUSED');
     });
 
     it('POST /augmentpropertyrecord should fail without userId', async () => {

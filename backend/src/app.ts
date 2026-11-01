@@ -53,7 +53,7 @@ app.get('/listings', async (req: Request, res: Response) => {
 
         res.json({ data: result.rows, count: result.rowCount });
     } catch (e: any) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ error: e.message || 'Postgres unreachable — check DATABASE_URL and that Postgres+PostGIS is running', code: e.code });
     }
 });
 
