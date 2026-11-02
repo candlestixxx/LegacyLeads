@@ -64,7 +64,8 @@ export async function fetchListings(): Promise<{
     const res = await fetch(`${API_BASE}/listings`, { cache: 'no-store' });
     if (!res.ok) return { data: [], error: `HTTP ${res.status} from API` };
     const json = await res.json();
-    return { data: Array.isArray(json) ? json : (json.listings ?? []), error: null };
+    // Backend returns { data: rows, count }; older mocks used { listings } or a bare array.
+    return { data: Array.isArray(json) ? json : (json.data ?? json.listings ?? []), error: null };
   } catch (e) {
     return { data: [], error: e instanceof Error ? e.message : 'API unreachable' };
   }
